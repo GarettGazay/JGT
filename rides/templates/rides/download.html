@@ -1,0 +1,56 @@
+{% extends 'chooser/base.html' %}
+
+{% block content %}
+
+<h4 style="text-align: center;">Download page</h4>
+
+<!-- Loop One off rides from db -->
+<br>
+<div class="one-off-rides">
+  <ul class="list-group">
+  <p style="text-align: center;">One-Off Rides</p>
+  {% for ride in one_off %}
+
+  <li class="list-group-item vertical-align" style="margin: 5px;"><span>Author: </span>{{ride.author}}
+  |    <span>Patient: {{ride.patient_first_name}} {{ride.patient_last_name}} </span>   |   Created: {{ride.time_stamp}} {% if ride.downloaded == True %} <span style="color: #56ff56; margin-left: 20px;"> dashride <i class="fas fa-check"></i> </span>&nbsp;  |  &nbsp; </span><span style="color: #bfbfbf;">{{ride.dl_user}}</span>&nbsp;<span style="font-size: 10px; color: #3295ff;">{{ride.dl_time}}</span>{% endif %}
+ <span class="pull-right gray"><a id='dr-button' class="btn btn-primary btn-xs" href="{% url 'rides:one_off_dr' pk=ride.pk %}">Dashride</a>  <span style="margin-right: 5px;">  </span>
+ <a id='oa-button' class="btn btn-primary btn-xs" href="{% url 'rides:one_off_oa' pk=ride.pk  %}">Office Ally</a> </span>
+
+  {% endfor %}
+    </ul>
+
+
+</div>
+
+
+<!-- Loope reocurring rides from db -->
+
+<div class="reocurring-rides">
+  <ul class="list-group">
+  <p style="text-align: center;">Reocurring Bookings</p>
+  {% for ride in reocurring %}
+
+  <li class="list-group-item vertical-align" style="margin: 5px;"><span>Author: </span>{{ride.author}}
+  |    <span>Patient: {{ride.patient_first_name}} {{ride.patient_last_name}} </span>   |   Created: {{ride.time_stamp}} {% if ride.downloaded == True %} <span style="color: #56ff56; margin-left: 20px;"> dashride <i class="fas fa-check"></i> </span>&nbsp;  |  &nbsp; </span><span style="color: #bfbfbf;">{{ride.dl_user}}</span>&nbsp;<span style="font-size: 10px; color: #3295ff;">{{ride.dl_time}}</span>{% endif %}
+ <span class="pull-right gray"><a id="dr-multi" class="btn btn-primary btn-xs" href="{% url 'rides:reocurring_dr' pk=ride.pk %}">Dashride</a>  <span style="margin-right: 5px;">  </span> <a class="btn btn-primary btn-xs" href="{% url 'rides:reocurring_oa' pk=ride.pk  %}">Office Ally</a> </span>
+
+
+  {% endfor %}
+    </ul>
+
+
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    $("#dr-button, #dr-multi").click(function() {
+      console.log('test');
+     setTimeout(function() {
+         window.location.reload();
+      }, 2000);
+   });
+  });
+</script>
+
+
+{% endblock %}

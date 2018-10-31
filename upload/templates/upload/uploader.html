@@ -1,0 +1,21 @@
+{% extends 'chooser/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="padding:40px;margin:40px;border:1px solid #ccc">
+    <legend id='title' align='center'>CSV Dashride Converter</legend>
+    <form action="#" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{file_form | crispy}}
+        <input type="submit" value="Upload" />
+    </form>
+</div>
+
+<div style="background: #f4f4f4; border: 1px solid #e0e0e0; padding-top: 10px;" align='center'>
+
+        {% for file in csv_files %}
+          <span style="color: gray;">Converted File:</span> <a href="/media/converted/{{ file.name }}"  download>Download</a>
+            <p>Created: {{file.upload_date}}</p>
+        {% endfor %}
+</div>
+
+{% endblock content %}

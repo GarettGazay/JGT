@@ -1,0 +1,58 @@
+{% extends 'chooser/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if messages %}
+<ul class="messages" id="messages" style="margin: 0 auto; text-align: center; color: red;">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<div class="basic-data">
+    <h4 class="booking-title" align='center'> One-Off Ride Booking Form</h4>
+    <form class="site-form" action="{% url 'rides:book' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form | crispy }}
+      <input class="create-booking btn btn-success" id='submit-button' type="submit" name="" value="Create One Off Ride">
+    </form>
+</div>
+
+
+
+<script>
+// <!-- Appointment Date - One off -->
+$( function() {
+     $( "#id_appointment_date").datepicker({ dateFormat: 'yy-mm-dd'});
+   });
+// <!-- Appointment Time - One Off -->
+ $( function(){
+   $('#id_pickup_time,#id_return_time').timepicker({
+       timeFormat: 'HH:mm',
+       interval:15,
+       });
+     });
+</script>
+
+<!-- Confirm before submit -->
+<script type="text/javascript">
+  $(function () {
+    $('#submit-button').click(function () {
+      return confirm('Are you sure you want to submit the form?');
+    });
+  });
+</script>
+
+<script type="text/javascript">
+  $(function () {
+    $('#messages').fadeOut(3000);
+  });
+</script>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'chooser/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="basic-data">
+    <h4 class="booking-title" align='center'> One-Off Booking Form</h4>
+    <form class="site-form" action="{% url 'rides:universal_form' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form | crispy }}
+      <input class="create-booking btn btn-success" id='submit-button' type="submit" name="" value="Create One Off Ride">
+    </form>
+</div>
+
+{% endblock content %}
