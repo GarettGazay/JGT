@@ -6,6 +6,7 @@ import csv
 from django.core.files import File
 from datetime import date, timedelta, datetime
 from dateutil import relativedelta
+from django.contrib import messages
 
 def uploader(request):
     if request.method=="POST":
@@ -20,12 +21,15 @@ def uploader(request):
         with open('media/'+str(new_upload),'r') as csv_file:
             csv_reader = csv.reader(csv_file)
             time_stamp = datetime.now().strftime('%Y_%m_%d - %I.%M%p')
+            next(csv_file)
 
-            with open(f'media/converted/converted_{time_stamp}.csv','w') as new_file:
+            with open(f'media/converted/converted_{time_stamp}.csv','w', newline='') as new_file:
                 csv_writer = csv.writer(new_file)
                 convertedDB = ConvertedFile(name=f'converted_{time_stamp}.csv',path=f'media/converted/converted_{time_stamp}.csv')
                 convertedDB.save()
-                next(csv_file)
+
+                csv_writer.writerow(['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type','passengers','driver_notes','dispatcher_notes','customer_notes','driver_name','driver_email'])
+
                 # grabbing data from the uploaded csv - parse to variables
                 for line in csv_reader:
                     customer_name = line[0]
@@ -33,21 +37,22 @@ def uploader(request):
                     customer_email = line[2]
                     start_address = line[3]
                     end_address = line[4]
-                    pickup_date = line[14]
-                    return_date = line[15]
-                    pickup_time = line[7]
-                    return_time = line[8]
-                    account_id = line[9]
-                    service_type = line[10]
-                    passengers = line[11]
-                    weekdays = line[12]
-                    round_trip = line[13]
-                    driver_notes = line[18]
-                    call_number = line[16] #dispatcher notes
+                    pickup_date = line[12]
+                    return_date = line[13]
+                    pickup_time = line[5]
+                    return_time = line[6]
+                    account_id = line[7]
+                    service_type = line[8]
+                    passengers = line[9]
+                    weekdays = line[10]
+                    round_trip = line[11]
+                    driver_notes = line[16]
+                    call_number = line[14] #dispatcher notes
                     customer_notes = ''
                     driver_name = ''
                     driver_email = ''
-                    dispatcher_notes=line[19]
+                    dispatcher_notes=line[17]
+
 
                     # Parse data for date range algorithm
                     day_choices = []
@@ -98,19 +103,18 @@ def uploader(request):
 
                     # Write to file
                     # Header
-                    csv_writer.writerow(['customer_name','customer_phone','customer_email','start_address','end_address','pickup_date','return_date','account_id','service_type','passengers','driver_notes','dispatcher_notes','customer_notes','driver_name','driver_email'])
 
                     for iterdate in date_list:
+                        print(iterdate)
                         if round_trip == 'y' or 'Y':
-                            csv_writer.writerow([customer_name, customer_phone, customer_email, start_address, end_address, iterdate + ' ' + pickup_time, iterdate + ' ' + return_time, account_id, service_type, passengers, driver_notes + ' | ' + call_number , dispatcher_notes,'','','' ])
-                            csv_writer.writerow([customer_name, customer_phone, customer_email, end_address, start_address, iterdate + ' ' + pickup_time, iterdate + ' ' + return_time, account_id, service_type, passengers, driver_notes + ' | ' + call_number, dispatcher_notes,'','','' ])
-                            messages.success(request, 'File successfully converted! You may need to refresh the page.')
+                            csv_writer.writerow([customer_name, customer_phone, customer_email, start_address, end_address, iterdate + ' ' + pickup_time,'', account_id, service_type, passengers, driver_notes  + call_number , dispatcher_notes,'','','' ])
+                            csv_writer.writerow([customer_name, customer_phone, customer_email, end_address, start_address, iterdate + ' ' + return_time, '', account_id, service_type, passengers, driver_notes + call_number, dispatcher_notes,'','','' ])
                         elif round_trip == 'n' or 'N':
                             csv_writer.writerow([customer_name, customer_phone, customer_email, start_address, end_address, iterdate + ' ' + pickup_time, iterdate + ' ' + return_time, account_id, service_type, passengers,driver_notes + ' | ' + call_number, dispatcher_notes,'','',''])
                         else:
                             messages.warning(request, 'Something is wrong with a round trip cell in the original file. Please fix it.')
 
-
+            messages.success(request, 'File successfully converted! You may need to refresh the page.')
             return HttpResponseRedirect(reverse('uploader'))
 
 
